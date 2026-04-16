@@ -1,3 +1,6 @@
+from sklearn.metrics import confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
