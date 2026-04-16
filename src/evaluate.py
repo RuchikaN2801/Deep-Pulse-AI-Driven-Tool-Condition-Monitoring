@@ -53,8 +53,8 @@ model.load_state_dict(torch.load("models/saved_models/cnn_lstm.pth"))
 model.eval()
 
 # Evaluation
-correct = 0
-total = 0
+all_preds = []
+all_targets = []
 
 with torch.no_grad():
     for inputs, targets in test_loader:
@@ -63,8 +63,24 @@ with torch.no_grad():
         outputs = model(inputs)
         _, predicted = torch.max(outputs, 1)
 
-        total += targets.size(0)
-        correct += (predicted == targets).sum().item()
+        all_preds.extend(predicted.cpu().numpy())
+        all_targets.extend(targets.cpu().numpy())
 
-accuracy = 100 * correct / total
+# Accuracy
+accuracy = 100 * np.sum(np.array(all_preds) == np.array(all_targets)) / len(all_targets)
 print(f"Accuracy: {accuracy:.2f}%")
+
+# Confusion Matrix
+cm = confusion_matrix(all_targets, all_preds)
+print("Confusion Matrix:\n", cm)
+
+# Plot
+plt.imshow(cm)
+plt.title("Confusion Matrix")
+plt.colorbar()
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# Report
+print(classification_report(all_targets, all_preds))
